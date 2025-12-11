@@ -102,9 +102,9 @@
                 },
                 "preprocess": {
                     "type": "string",
-                    "description": "The preprocessing steps to perform on the input files. Should be a comma-separated list of one or more of the following options: split_multiallelic, normalizate, deduplicate, prepy, filter_contigs",
-                    "errorMessage": "A wrong input has been detected. It should be a comma-separated list of on or more of these options: split_multiallelic, normalize, deduplicate, prepy, filter_contigs",
-                    "pattern": "^((normalize|split_multiallelic|deduplicate|prepy|filter_contigs)?,?)*(?<!,)$",
+                    "description": "The preprocessing steps to perform on the input files. Should be a comma-separated list of one or more of the following options: split_multiallelic, normalize, deduplicate, prepy, filter_contigs, filter_dragen",
+                    "errorMessage": "A wrong input has been detected. It should be a comma-separated list of one or more of these options: split_multiallelic, normalize, deduplicate, prepy, filter_contigs, filter_dragen",
+                    "pattern": "^((normalize|split_multiallelic|deduplicate|prepy|filter_contigs|filter_dragen)?,?)*(?<!,)$",
                     "fa_icon": "fas fa-folder-open"
                 },
                 "sv_standardization": {
@@ -120,6 +120,12 @@
                     "errorMessage": "A wrong input has been detected. Should be a comma-separated list of one or more of the following options: metrics, upset, svlength",
                     "pattern": "^((svlength|upset|metrics)?,?)*(?<!,)$",
                     "fa_icon": "fas fa-folder-open"
+                },
+                "truvari_refine": {
+                    "type": "boolean",
+                    "description": "Run truvari refine after truvari bench for improved accuracy using sequence alignment (recommended for DRAGEN SV benchmarking)",
+                    "default": false,
+                    "fa_icon": "fas fa-cogs"
                 },
                 "min_sv_size": {
                     "type": "integer",

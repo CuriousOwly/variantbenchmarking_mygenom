@@ -1,0 +1,6 @@
+name: bcftools_filter_dragen
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - bioconda::bcftools=1.21

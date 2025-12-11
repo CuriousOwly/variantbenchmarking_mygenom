@@ -1,0 +1,60 @@
+name: bcftools_filter_dragen
+description: Filter VCF files according to DRAGEN benchmarking recommendations
+keywords:
+  - vcf
+  - filter
+  - dragen
+  - structural variants
+tools:
+  - bcftools:
+      description: |
+        View, subset and filter VCF files by position and filtering expression.
+        This module applies DRAGEN-specific filtering for SV benchmarking:
+        - Truth VCF: Removes ALT="*" records as recommended by NIST
+        - Query VCF: Removes <DUP:TANDEM> symbolic alleles (tandem dups >1000bp)
+      homepage: http://samtools.github.io/bcftools/bcftools.html
+      documentation: http://www.htslib.org/doc/bcftools.html
+      doi: 10.1093/bioinformatics/btp352
+      licence: ["MIT"]
+input:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
+  - vcf:
+      type: file
+      description: VCF file (compressed)
+      pattern: "*.{vcf.gz}"
+  - tbi:
+      type: file
+      description: VCF index file
+      pattern: "*.{vcf.gz.tbi}"
+  - filter_type:
+      type: string
+      description: |
+        Type of filtering to apply:
+        - 'truth': Removes ALT="*" records (for truth VCFs)
+        - 'query': Removes ALT="<DUP:TANDEM>" records (for DRAGEN query VCFs)
+output:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
+  - vcf:
+      type: file
+      description: Filtered VCF file
+      pattern: "*.filtered.vcf.gz"
+  - tbi:
+      type: file
+      description: Index of filtered VCF file
+      pattern: "*.filtered.vcf.gz.tbi"
+  - versions:
+      type: file
+      description: File containing software versions
+      pattern: "versions.yml"
+authors:
+  - "@kubranarci"
+maintainers:
+  - "@kubranarci"
