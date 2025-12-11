@@ -1,0 +1,2 @@
+id,test_vcf,caller,subsample,pctsize,pctseq,pctovl,refdist,chunksize
+HG002_dragen,/path/to/your/dragen.sv.vcf.gz,dragen,,0.7,0.7,0.0,2000,5000
