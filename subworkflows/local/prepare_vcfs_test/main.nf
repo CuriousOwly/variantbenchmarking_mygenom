@@ -13,6 +13,7 @@ include { RTGTOOLS_SVDECOMPOSE         } from '../../../modules/nf-core/rtgtools
 include { BCFTOOLS_VIEW as BCFTOOLS_VIEW_CONTIGS      } from '../../../modules/nf-core/bcftools/view'
 include { BCFTOOLS_NORM as BCFTOOLS_SPLIT_MULTI       } from '../../../modules/nf-core/bcftools/norm'
 include { BCFTOOLS_REHEADER as BCFTOOLS_REHEADER_QUERY} from '../../../modules/local/bcftools/reheader'
+include { BCFTOOLS_FILTER_DRAGEN       } from '../../../modules/local/bcftools/filter_dragen'
 
 
 workflow PREPARE_VCFS_TEST {
@@ -82,6 +83,18 @@ workflow PREPARE_VCFS_TEST {
 
     BCFTOOLS_REHEADER_QUERY.out.vcf.join(BCFTOOLS_REHEADER_QUERY.out.index)
         .set{vcf_ch}
+
+    // Apply DRAGEN-specific filtering for structural variants
+    if (params.preprocess.contains("filter_dragen") && params.variant_type == "structural"){
+        BCFTOOLS_FILTER_DRAGEN(
+            vcf_ch,
+            'query'  // Filter type for test/query VCF: removes <DUP:TANDEM>
+        )
+        versions = versions.mix(BCFTOOLS_FILTER_DRAGEN.out.versions.first())
+
+        BCFTOOLS_FILTER_DRAGEN.out.vcf.join(BCFTOOLS_FILTER_DRAGEN.out.tbi)
+            .set{vcf_ch}
+    }
 
     if (params.preprocess.contains("filter_contigs")){
         // filter out extra contigs!

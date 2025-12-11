@@ -3,6 +3,7 @@
 //
 
 include { TRUVARI_BENCH                             } from '../../../modules/nf-core/truvari/bench'
+include { TRUVARI_REFINE                            } from '../../../modules/nf-core/truvari/refine'
 include { BCFTOOLS_REHEADER as BCFTOOLS_REHEADER_1  } from '../../../modules/local/bcftools/reheader'
 include { BCFTOOLS_REHEADER as BCFTOOLS_REHEADER_2  } from '../../../modules/local/bcftools/reheader'
 include { BCFTOOLS_REHEADER as BCFTOOLS_REHEADER_3  } from '../../../modules/local/bcftools/reheader'
@@ -30,7 +31,33 @@ workflow TRUVARI_BENCHMARK {
     versions = versions.mix(TRUVARI_BENCH.out.versions.first())
     logs    = logs.mix(TRUVARI_BENCH.out.log)
 
-    TRUVARI_BENCH.out.summary
+    // Run truvari refine if enabled (DRAGEN workflow recommendation)
+    summary_ch = TRUVARI_BENCH.out.summary
+    if (params.truvari_refine){
+        // Combine all bench outputs for refine
+        TRUVARI_BENCH.out.summary
+            .join(TRUVARI_BENCH.out.fn_vcf)
+            .join(TRUVARI_BENCH.out.fn_tbi)
+            .join(TRUVARI_BENCH.out.fp_vcf)
+            .join(TRUVARI_BENCH.out.fp_tbi)
+            .join(TRUVARI_BENCH.out.tp_base_vcf)
+            .join(TRUVARI_BENCH.out.tp_base_tbi)
+            .join(TRUVARI_BENCH.out.tp_comp_vcf)
+            .join(TRUVARI_BENCH.out.tp_comp_tbi)
+            .join(TRUVARI_BENCH.out.log)
+            .set { refine_input }
+
+        TRUVARI_REFINE(
+            refine_input,
+            fasta,
+            fai
+        )
+        versions = versions.mix(TRUVARI_REFINE.out.versions.first())
+        logs = logs.mix(TRUVARI_REFINE.out.log)
+        summary_ch = TRUVARI_REFINE.out.summary
+    }
+
+    summary_ch
         .map { _meta, file -> tuple([vartype: params.variant_type] + [benchmark_tool: "truvari"], file) }
         .groupTuple()
         .set { report }

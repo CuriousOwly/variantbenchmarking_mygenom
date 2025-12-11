@@ -1,0 +1,8 @@
+name: truvari_refine
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - bioconda::truvari=5.3.0
+  - bioconda::mafft=7.526

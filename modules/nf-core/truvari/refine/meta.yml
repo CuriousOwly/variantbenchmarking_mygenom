@@ -1,0 +1,67 @@
+name: truvari_refine
+description: Refine truvari bench results using sequence alignment for improved accuracy
+keywords:
+  - benchmark
+  - truvari
+  - structural variants
+  - vcf
+  - refinement
+tools:
+  - truvari:
+      description: Structural variant toolkit for VCF comparison and annotation
+      homepage: https://github.com/ACEnglish/truvari
+      documentation: https://github.com/ACEnglish/truvari/wiki
+      tool_dev_url: https://github.com/ACEnglish/truvari
+      licence: ["MIT"]
+input:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
+  - bench_dir:
+      type: directory
+      description: Output directory from truvari bench containing candidate variants
+      pattern: "*/"
+  - meta2:
+      type: map
+      description: |
+        Groovy Map containing reference information
+  - fasta:
+      type: file
+      description: Reference genome FASTA file
+      pattern: "*.{fasta,fa,fna}"
+  - meta3:
+      type: map
+      description: |
+        Groovy Map containing reference index information
+  - fai:
+      type: file
+      description: Reference genome FASTA index file
+      pattern: "*.{fasta,fa,fna}.fai"
+output:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
+  - summary:
+      type: file
+      description: Refined variant summary JSON with updated TP/FP/FN counts
+      pattern: "*.refine.variant_summary.json"
+  - regions:
+      type: file
+      description: Regions used for refinement
+      pattern: "*.refine.regions.txt"
+  - log:
+      type: file
+      description: Truvari refine log file
+      pattern: "refine.log"
+  - versions:
+      type: file
+      description: File containing software versions
+      pattern: "versions.yml"
+authors:
+  - "@kubranarci"
+maintainers:
+  - "@kubranarci"

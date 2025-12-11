@@ -10,6 +10,7 @@ include { PUBLISH_PROCESSED_VCF      } from '../../../modules/local/custom/publi
 include { RTGTOOLS_SVDECOMPOSE      } from '../../../modules/nf-core/rtgtools/svdecompose'
 include { BCFTOOLS_NORM as BCFTOOLS_SPLIT_MULTI       } from '../../../modules/nf-core/bcftools/norm'
 include { BCFTOOLS_REHEADER as BCFTOOLS_REHEADER_TRUTH} from '../../../modules/local/bcftools/reheader'
+include { BCFTOOLS_FILTER_DRAGEN     } from '../../../modules/local/bcftools/filter_dragen'
 
 
 workflow PREPARE_VCFS_TRUTH {
@@ -54,6 +55,18 @@ workflow PREPARE_VCFS_TRUTH {
 
     BCFTOOLS_REHEADER_TRUTH.out.vcf.join(BCFTOOLS_REHEADER_TRUTH.out.index)
         .set{vcf_ch}
+
+    // Apply DRAGEN-specific filtering for structural variants
+    if (params.preprocess.contains("filter_dragen") && params.variant_type == "structural"){
+        BCFTOOLS_FILTER_DRAGEN(
+            vcf_ch,
+            'truth'  // Filter type for truth VCF: removes ALT="*"
+        )
+        versions = versions.mix(BCFTOOLS_FILTER_DRAGEN.out.versions.first())
+
+        BCFTOOLS_FILTER_DRAGEN.out.vcf.join(BCFTOOLS_FILTER_DRAGEN.out.tbi)
+            .set{vcf_ch}
+    }
 
     if (params.preprocess.contains("split_multiallelic")){
 
